@@ -1,61 +1,87 @@
-#include "estado.h"
-
-/** \mainpage Créditos
- * 
- * Projeto realizado por Ana Filipa Pereira, Carolina Santejo e Sofia Santos, alunas do 1º ano do MIEI na Universidade
- * do Minho, no âmbito da cadeira de Laboratórios de Informática II.
- * 
- */
-
 /**
-\file bot.h
-\brief Definição do bot e das função relativas a este.
+@file bot.h
+Definição das funções relativas ao bot
 */
 
 
-/**
- * \brief Estrutura que armazena as características de um 'bot', i.e., um jogador controlado pelo computador.
- * 
- * Um bot é caracterizado pela sua dificuldade e pela peça com que joga. A partir destes dois dados, podemos criar um jogador autónomo, que usa algoritmos para calcular onde deve jogar.
- */
-typedef struct bot {
-    char dif; ///< a dificuldade do bot
-    VALOR peca; ///< a peça com que o bot joga
-} BOT;
+#ifndef ___BOT_H___
+#define ___BOT_H___
+
+#include "dados.h"
+#include "listas.h"
 
 
 /**
- * Calcula a posição onde o bot deve jogar, com base na sua dificuldade .
- * @param [in] bot bot que irá jogar
- * @param [in] e estado que contém o tabuleiro onde o bot irá jogar
- * @return posição onde o bot deve jogar
- */
-POSICAO jogadaBot(BOT* bot, ESTADO* e);
+\brief Verifica as posições livres em torno de uma dada casa.
+Esta função varre todas as posições vizinhas da peça branca que estejam livres e armazena-las numa lista ligada de posições.
+@param e Apontador para o estado
+@param c A coordenada a ser inserida
+@returns A lista com as coordenadas inseridas
+*/
+LISTA vizinhos(ESTADO *e, COORDENADA c);
+
 
 /**
- * Calcula o valor de um tabuleiro, isto é, o quão bom esse tabuleiro é para determinado jogador, com base na colocação das peças. 
- * @param [in] e estado que contém o tabuleiro
- * @param [in] peca peça do jogador para o qual vamos calcular o valor
- * @return o valor do tabuleiro para o jogador dado
- */
-int valor(ESTADO e, VALOR peca);
-
-/**
- * Algoritmo que determina o valor de uma jogada com base nas possíveis jogadas futuras (descrição mais detalhada no relatório).
- * @param node o estado cujo valor queremos calcular.
- * @param depth o nível da recursão, quando maior, mais tempo a função vai demorar a ser executada. Se for 0, a função apenas calcula o valor atual do estado (node).
- * @param alpha valor auxiliar para tornar a função mais eficiente
- * @param beta valor auxiliar para tornar a função mais eficiente
- * @param maximizingPlayer a peça do jogador que "chamou" esta função
- * @return o valor do estado node, para ser comparado com os outros nodos
- */
-int minimax(ESTADO node, int depth, int alpha, int beta, VALOR maximizingPlayer);
-
-/**
- * Calcula o máximo de dois números.
- */
-int max(int a, int b);
-/**
- * Calcula o mínimo de dois números.
- */
+\brief Calcula o mínimo.
+Esta função compara dois inteiros e verifica qual é o menor.
+@param a O primeiro inteiro
+@param b O segundo inteiro
+@returns O menor inteiro
+*/
 int min(int a, int b);
+
+
+/**
+\brief Calcula o máximo.
+Esta função compara dois inteiros e verifica qual é o maior.
+@param a O primeiro inteiro
+@param b O segundo inteiro
+@returns O maior inteiro
+*/
+int max(int a, int b);
+
+
+/**
+\brief Seleciona um valor da matriz.
+Esta função atribui valores a cada uma das posições do tabuleiro, selecionando a melhor jogada possível com esses valores.
+@param e Apontador para o estado
+@param peca O valor da casa a ser atribuído.
+@returns O valor da casa selecionada
+*/
+int valor(ESTADO *e, CASA peca);
+
+
+/**
+\brief Escolha aleatória da jogada. 
+Esta função utiliza a heurística que simplesmente escolhe uma das hipóteses possíveis.
+@param e Apontador para o estado
+@returns A coordenada selecionada
+*/
+COORDENADA pesquisa_aleatoria(ESTADO *e);
+
+
+/**
+\brief Algoritmo de procura minimax.  
+Esta função utiliza a heurística minimax, que avalia cada posição, experimentando todas as jogadas possíveis de cada um 
+dos jogadores, até uma dada profundidade, bem como avaliando a posição final em cada caso e escolhendo a jogada mais 
+proveitosa para o jogador atual. O bot maximiza a sua posição, diminuindo o proveito do adversário. Nesta heurística
+utiliza-se alpha beta pruning.
+@param node O estado do jogo
+@param depth A profundidade da árvore (o nível de recursão). Caso seja 0 calcula o valor atual do estado (node).
+@param alpha Valor auxiliar que verifica se existe um melhor valor para o max
+@param beta Valor auxiliar que verifica se existe um melhor valor para o min
+@param maximizing_player A casa que o jogador selecionou para esta função
+@returns O valor do estado node de forma a ser comparado com outros
+*/
+int minimax(ESTADO node, int depth, int alpha, int beta, CASA maximizing_player);
+
+
+/**
+\brief Determina a posição onde o bot vai jogar
+Esta função usa a heurística minimax para determinar onde o bot vai jogar.
+@param e Apontador para o estado
+*/
+void jogada_bot(ESTADO *e);
+
+
+#endif
